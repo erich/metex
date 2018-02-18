@@ -30,12 +30,15 @@ defmodule Metex.Worker do
   end
 
   defp temperature_of(location) do
-    location |> url_for() |> HTTPoison.get() |> parse_response()
+    location
+    |> url_for()
+    |> HTTPoison.get()
+    |> parse_response()
   end
 
   defp url_for(location) do
-    "http://api.openweathermbap.org/data/2.5/weather?q=#{location}&APPID=
-    #{apikey}"
+    location = URI.encode(location)
+    "http://api.openweathermap.org/data/2.5/weather?q=#{location}&appid=#{apikey()}" 
   end
 
   defp parse_response({:ok, %HTTPoison.Response{body: body, status_code:
