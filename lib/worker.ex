@@ -12,6 +12,10 @@ defmodule Metex.Worker do
     GenServer.call(pid, {:location, location})
   end
 
+  def get_stats(pid) do
+    GenServer.call(pid, :get_stats)
+  end
+
 
   ## Server Callbacks
 
@@ -29,6 +33,10 @@ defmodule Metex.Worker do
     end
   end
 
+  def handle_call(:get_stats, _from, stats) do
+    {:reply, stats, stats}
+  end
+
   defp temperature_of(location) do
     location
     |> url_for()
@@ -41,9 +49,10 @@ defmodule Metex.Worker do
     "http://api.openweathermap.org/data/2.5/weather?q=#{location}&appid=#{apikey()}" 
   end
 
-  defp parse_response({:ok, %HTTPoison.Response{body: body, status_code:
-                                                200}}) do
-    body |> JSON.decode! |> compute_temperature
+  defp parse_response({:ok, %HTTPoison.Response{body: body, status_code: 200}}) do
+    body
+    |> JSON.decode!()
+    |> compute_temperature()
   end
 
   defp parse_response(_) do
