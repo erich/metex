@@ -16,7 +16,6 @@ defmodule Metex.Worker do
     GenServer.call(pid, :get_stats)
   end
 
-
   ## Server Callbacks
 
   def init(:ok) do
@@ -28,6 +27,7 @@ defmodule Metex.Worker do
       {:ok, temp} ->
         new_stats = update_stats(stats, location)
         {:reply, "#{temp} C", new_stats}
+
       _ ->
         {:reply, :error, stats}
     end
@@ -46,7 +46,7 @@ defmodule Metex.Worker do
 
   defp url_for(location) do
     location = URI.encode(location)
-    "http://api.openweathermap.org/data/2.5/weather?q=#{location}&appid=#{apikey()}" 
+    "http://api.openweathermap.org/data/2.5/weather?q=#{location}&appid=#{apikey()}"
   end
 
   defp parse_response({:ok, %HTTPoison.Response{body: body, status_code: 200}}) do
@@ -76,6 +76,7 @@ defmodule Metex.Worker do
     case Map.has_key?(old_stats, location) do
       true ->
         Map.update!(old_stats, location, &(&1 + 1))
+
       false ->
         Map.put_new(old_stats, location, 1)
     end
